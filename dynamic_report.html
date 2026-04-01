@@ -13,17 +13,20 @@ library(tidyverse)
 body {
   background-color: #ffe6f0;
 }
+h2 {
+  color: #d6336c;
+}
 ```
 
-## Analysing exposure to Instagram clothing ads and how the may influence consumer behaviour 
+## Analysing exposure to Instagram clothing ads and how they may influence consumer behaviour
 
-This report analyses participants Instagram average daily usage, how often they are exposed to Instagram advertisements regarding clothing websites, how different aspects of these advertisements influence participants to click on websites, and their purchasing behaviour. We were interested in seeing how much Instagram advertisements impact people's purchases because we wanted to be able to analyse what specific aspects of these ads influenced people to click, and also buy. The data collected may be useful to advertisement companies, clothing stores and anyone interested in consumer behaviour. 
+This report analyses participants’ Instagram average daily usage, how often they are exposed to Instagram advertisements regarding clothing websites, how different aspects of these advertisements influence participants to click on websites, and their purchasing behaviour. We were interested in seeing how much Instagram advertisements impact people's purchases because we wanted to analyse what specific aspects of these ads influenced people to click, and also buy. The data collected may be useful to advertisement companies, clothing stores, and anyone interested in consumer behaviour.
 
-```{r}
-# read data
+```{r data_and_analysis}
+# Read data
 logged_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSx9vbbR6YR9Fs92i5d24k-_pvkhAP327ZHxeP83Cjuooryk68WACEg8LMj-doSc-cDUSIBSN7eBAl4/pub?output=csv")
 
-# rename variables
+# Rename variables
 latest_data <- logged_data %>%
   rename(
     screentime = `average daily screen time on Instagram (in hours)`,
@@ -32,14 +35,18 @@ latest_data <- logged_data %>%
     clicked = `influenced to click on website`,
     purchase = `Did you purchase anything from the website as a result of the advertisement?`
   )
-```
 
-## Summary value number 1
+# Summary 1: Mean screen time
+mean_screentime <- round(mean(latest_data$screentime, na.rm = TRUE), 1)
 
-The average daily Instagram screen time is **`r round(mean(latest_data$screentime, na.rm = TRUE), 1)` hours**.
+# Summary 2: Number of participants who clicked an ad
+clicked_count <- sum(latest_data$clicked == "Yes")
 
-```{r}
-latest_data %>%
+# Summary 3: Number of participants who clicked AND purchased
+clicked_and_purchased <- sum(latest_data$clicked == "Yes" & latest_data$purchase == "Yes")
+
+# Bar chart 1: ad exposure
+ad_exposure_plot <- latest_data %>%
   ggplot(aes(x = saw_ad)) +
   geom_bar() +
   labs(
@@ -47,14 +54,9 @@ latest_data %>%
     x = "Saw advertisement",
     y = "Count"
   )
-```
 
-## Summary value number 2
-
-Out of `r nrow(latest_data)` participants, **`r sum(latest_data$clicked == "Yes", na.rm = TRUE)` clicked on an advertisement**.
-
-```{r}
-latest_data %>%
+# Bar chart 2: clicked vs purchased
+clicked_vs_purchased_plot <- latest_data %>%
   ggplot(aes(x = clicked, fill = purchase)) +
   geom_bar(position = "dodge") +
   labs(
@@ -65,6 +67,15 @@ latest_data %>%
   )
 ```
 
-## Summary value number 3
+### Summary Values (Dynamic Text)
 
-Out of 20 participants, `r sum(latest_data$clicked == "Yes" & latest_data$purchase == "Yes")` participants both clicked on an advertisement and made a purchase.
+- The average daily Instagram screen time is **`r mean_screentime` hours**.  
+- Out of `r nrow(latest_data)` participants, **`r clicked_count` clicked on an advertisement**.  
+- Out of 20 participants, **`r clicked_and_purchased` participants both clicked on an advertisement and made a purchase**.
+
+### Plots
+
+```{r show_plots}
+ad_exposure_plot
+clicked_vs_purchased_plot
+```
