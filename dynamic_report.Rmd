@@ -1,0 +1,70 @@
+---
+title: "My report of the relationship between Instagram ad exposure and consumer behaviour." 
+author: "Rosa Paterson"
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+library(tidyverse)
+```
+
+```{css}
+body {
+  background-color: #ffe6f0;
+}
+```
+
+## Analysing exposure to Instagram clothing ads and how the may influence consumer behaviour 
+
+This report analyses participants Instagram average daily usage, how often they are exposed to Instagram advertisements regarding clothing websites, how different aspects of these advertisements influence participants to click on websites, and their purchasing behaviour. We were interested in seeing how much Instagram advertisements impact people's purchases because we wanted to be able to analyse what specific aspects of these ads influenced people to click, and also buy. The data collected may be useful to advertisement companies, clothing stores and anyone interested in consumer behaviour. 
+
+```{r}
+# read data
+logged_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSx9vbbR6YR9Fs92i5d24k-_pvkhAP327ZHxeP83Cjuooryk68WACEg8LMj-doSc-cDUSIBSN7eBAl4/pub?output=csv")
+
+# rename variables
+latest_data <- logged_data %>%
+  rename(
+    screentime = `average daily screen time on Instagram (in hours)`,
+    saw_ad = `Did you see an advertisement for a clothing website on Instagram today?`,
+    more_than_one_ad = `more than one ad seen`,
+    clicked = `influenced to click on website`,
+    purchase = `Did you purchase anything from the website as a result of the advertisement?`
+  )
+```
+
+## Summary value number 1
+
+The average daily Instagram screen time is **`r round(mean(latest_data$screentime, na.rm = TRUE), 1)` hours**.
+
+```{r}
+latest_data %>%
+  ggplot(aes(x = saw_ad)) +
+  geom_bar() +
+  labs(
+    title = "Did participants see ads for clothing websites scrolling on Instagram?",
+    x = "Saw advertisement",
+    y = "Count"
+  )
+```
+
+## Summary value number 2
+
+Out of `r nrow(latest_data)` participants, **`r sum(latest_data$clicked == "Yes", na.rm = TRUE)` clicked on an advertisement**.
+
+```{r}
+latest_data %>%
+  ggplot(aes(x = clicked, fill = purchase)) +
+  geom_bar(position = "dodge") +
+  labs(
+    title = "Relationship Between Clicking Ads and Purchasing",
+    x = "Clicked on Ad",
+    y = "Count",
+    fill = "Purchased"
+  )
+```
+
+## Summary value number 3
+
+Out of 20 participants, `r sum(latest_data$clicked == "Yes" & latest_data$purchase == "Yes")` participants both clicked on an advertisement and made a purchase.
